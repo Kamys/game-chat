@@ -19,7 +19,7 @@
                 </pattern>
             </encoder>
         </appender>
-        <root level="debug">
+        <root level="info">
             <appender-ref ref="console"/>
         </root>
     </springProfile>
