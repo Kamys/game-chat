@@ -1,4 +1,4 @@
-package com.example.auth
+package example.auth
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

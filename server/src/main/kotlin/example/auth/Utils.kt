@@ -1,7 +1,7 @@
-package com.example.auth
+package example.auth
 
 
-import com.example.User
+import example.User
 import org.springframework.security.core.context.SecurityContextHolder
 
 fun getCurrentUser(): User {

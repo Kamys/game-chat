@@ -17,7 +17,4 @@ dependencies {
 
     // DB
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-
-    // TODO delete from server
-    implementation("com.squareup.okhttp3:okhttp:4.9.1")
 }

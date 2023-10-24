@@ -48,8 +48,10 @@ class MyListener() : WebSocketListener() {
 
 fun main() {
     val client = OkHttpClient()
+    val token = null
     val request = Request.Builder()
-        .url("ws://localhost:8080/ws/pp/123/websocket")
+        .addHeader("Authorization", "Bearer $token")
+        .url("ws://localhost:8080/ws")
         .build()
     val listener = MyListener()
     val ws = client.newWebSocket(request, listener)

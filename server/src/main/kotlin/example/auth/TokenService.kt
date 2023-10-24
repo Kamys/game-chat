@@ -1,7 +1,7 @@
-package com.example.auth
+package example.auth
 
-import com.example.User
-import com.example.UserRepository
+import example.User
+import example.UserRepository
 import org.bson.types.ObjectId
 import org.springframework.security.oauth2.jwt.*
 import org.springframework.stereotype.Service

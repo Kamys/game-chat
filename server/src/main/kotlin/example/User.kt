@@ -1,4 +1,4 @@
-package com.example
+package example
 
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
