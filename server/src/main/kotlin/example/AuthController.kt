@@ -49,7 +49,7 @@ class AuthController(
         )
     }
 
-    @GetMapping("/privateData")
+    @GetMapping("/private-data")
     fun privateData(): String {
         val user = getCurrentUser()
         return "privateData for user: ${user.username}"
