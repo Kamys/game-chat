@@ -1,5 +1,8 @@
 package com.example
 
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import org.springframework.messaging.converter.KotlinSerializationJsonMessageConverter
+import org.springframework.messaging.converter.MappingJackson2MessageConverter
 import org.springframework.messaging.converter.StringMessageConverter
 import org.springframework.messaging.simp.stomp.StompSession
 import org.springframework.messaging.simp.stomp.StompSessionHandler
@@ -13,7 +16,9 @@ object StompClient {
         val url = "ws://localhost:8080/ws"
         val webSocketClient = StandardWebSocketClient()
         val stompClient = WebSocketStompClient(webSocketClient)
-        stompClient.messageConverter = StringMessageConverter()
+        val mappingJackson2MessageConverter = MappingJackson2MessageConverter()
+        mappingJackson2MessageConverter.objectMapper.registerModule(KotlinModule.Builder().build())
+        stompClient.messageConverter = mappingJackson2MessageConverter
         val sessionHandler: StompSessionHandler = MyStompSessionHandler()
 
         val headers = WebSocketHttpHeaders()

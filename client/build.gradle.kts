@@ -4,4 +4,5 @@ dependencies {
     implementation("org.springframework:spring-messaging:6.0.13")
     implementation("org.apache.tomcat.embed:tomcat-embed-websocket:10.1.15")
     implementation("com.github.tomas-langer:chalk:1.0.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3")
 }

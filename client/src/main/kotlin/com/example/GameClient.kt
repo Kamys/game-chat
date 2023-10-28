@@ -1,11 +1,7 @@
 package com.example
 
 import com.github.tomaslanger.chalk.Chalk
-import org.springframework.messaging.converter.StringMessageConverter
 import org.springframework.messaging.simp.stomp.*
-import org.springframework.web.socket.WebSocketHttpHeaders
-import org.springframework.web.socket.client.standard.StandardWebSocketClient
-import org.springframework.web.socket.messaging.WebSocketStompClient
 import java.lang.reflect.Type
 
 
@@ -25,18 +21,20 @@ class MyStompSessionHandler : StompSessionHandlerAdapter() {
     }
 }
 
+data class Message(val username: String, val content: String)
+
 fun runApp() {
     val session = StompClient.getStompSession()
     val server = GameServer(session)
     println("You successful connected to server!")
     session.subscribe("/topic/reply", object : StompFrameHandler {
         override fun getPayloadType(headers: StompHeaders): Type {
-            return String::class.java
+            return Message::class.java
         }
 
         override fun handleFrame(headers: StompHeaders, payload: Any?) {
-            val (from, messages) = (payload as String).split(":")
-            println("${Chalk.on(from).cyan()}: $messages")
+            val message = (payload as Message)
+            println("${Chalk.on(message.username).cyan()}: ${message.content}")
         }
     })
 
@@ -44,10 +42,9 @@ fun runApp() {
     while (true) {
         val newMessage = readln()
         if (newMessage.equals("exit", ignoreCase = true)) {
-            server.sendMessages(newMessage)
             return
         }
-
+        server.sendMessages(newMessage)
     }
 }
 
