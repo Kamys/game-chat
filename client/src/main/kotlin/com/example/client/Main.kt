@@ -10,42 +10,11 @@ fun runApp(): CompletableFuture<Unit> {
     val client = Client(server)
 
     client.joinToChannel()
-    client.handleSendMessages()
+    client.subscribePrivateMessages()
+    client.handleUserInput()
 
     return clientSession
 }
-
-/*fun test() {
-    println("You successful connected to server!")
-    session.subscribe("/topic/reply", object : StompFrameHandler {
-        override fun getPayloadType(headers: StompHeaders): Type {
-            return MessageView::class.java
-        }
-
-        override fun handleFrame(headers: StompHeaders, payload: Any?) {
-            val message = (payload as MessageView)
-            println("${Chalk.on(message.from).cyan()}: ${message.content}")
-        }
-    })
-    session.subscribe("/user/queue/private", object : StompFrameHandler {
-        override fun getPayloadType(headers: StompHeaders): Type {
-            return MessageView::class.java
-        }
-
-        override fun handleFrame(headers: StompHeaders, payload: Any?) {
-            val message = (payload as MessageView)
-            println("[Private] ${Chalk.on(message.from).cyan()}: ${message.content}")
-        }
-    })
-
-    while (true) {
-        val newMessage = readln()
-        if (newMessage.equals("exit", ignoreCase = true)) {
-            return
-        }
-        server.sendMessages(newMessage)
-    }
-}*/
 
 fun main() {
     println("Start!")

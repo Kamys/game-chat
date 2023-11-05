@@ -24,8 +24,12 @@ data class MessageView(
 class GameServer(
     private val session: StompSession
 ) {
-    fun sendMessages(channelId: String, message: String) {
+    fun sendMessagesInChannel(channelId: String, message: String) {
         session.send("/app/send/channel/${channelId}", message)
+    }
+
+    fun sendPrivateMessages(username: String, message: String) {
+        session.send("/app/send/private/${username}", message)
     }
 
     fun subscribeMyStatus(handle: (UserStatusView) -> Unit): StompSession.Subscription {
@@ -34,6 +38,10 @@ class GameServer(
 
     fun subscribeChannel(channelId: String, handle: (MessageView) -> Unit): StompSession.Subscription {
         return subscribe("/message/channel/${channelId}", handle)
+    }
+
+    fun subscribePrivateMessages(handle: (MessageView) -> Unit): StompSession.Subscription {
+        return subscribe("/user/message/private", handle)
     }
 
     private inline fun <reified T> subscribe(destination: String, crossinline handler: (T) -> Unit): StompSession.Subscription {

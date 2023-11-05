@@ -6,12 +6,16 @@ class Client(private val server: GameServer) {
     private var currentChanelSubscription: StompSession.Subscription? = null
     private var currentChannelId: String? = null
 
-    fun handleSendMessages() {
+    fun handleUserInput() {
         while (true) {
             val messages = readln()
-            currentChannelId?.let {
-                server.sendMessages(it, messages)
-            }
+            handleInputMessage(this.currentChannelId, messages)
+        }
+    }
+
+    fun subscribePrivateMessages() {
+        server.subscribePrivateMessages {
+            println("[Private] ${it.from}: ${it.content}")
         }
     }
 
@@ -24,9 +28,25 @@ class Client(private val server: GameServer) {
         }
     }
 
+    private fun handleInputMessage(currentChannelId: String?, message: String) {
+        if (currentChannelId == null) {
+            println("Failed to send message. You are not connected to a channel")
+            return
+        }
+
+        tryParsePrivateMessage(message)?.let { (username, message) ->
+            server.sendPrivateMessages(username, message)
+            return
+        }
+
+        server.sendMessagesInChannel(currentChannelId, message)
+    }
+
     private fun subscribeChannel(channelId: String) {
         currentChanelSubscription?.unsubscribe()
-        currentChanelSubscription = server.subscribeChannel(channelId) { handleChannelMessage(it) }
+        currentChanelSubscription = server.subscribeChannel(channelId) {
+            println("${it.from}: ${it.content}")
+        }
     }
 
     private fun selectChannel(activeChannels: List<ChannelView>): String {
@@ -34,9 +54,5 @@ class Client(private val server: GameServer) {
         return selectOption(
             *activeChannels.map { it.id to it.name }.toTypedArray()
         )
-    }
-
-    private fun handleChannelMessage(messageView: MessageView) {
-        println("${messageView.from}: ${messageView.content}")
     }
 }

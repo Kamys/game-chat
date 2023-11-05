@@ -33,6 +33,12 @@ class WebSocketController(
             "/message/private",
             MessageView(principal.name, message)
         )
+        // Send private message for sender too
+        simpMessagingTemplate.convertAndSendToUser(
+            principal.name,
+            "/message/private",
+            MessageView(principal.name, message)
+        )
     }
 
     @MessageMapping("/send/channel/{channelId}")
