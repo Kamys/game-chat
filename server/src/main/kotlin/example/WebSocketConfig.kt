@@ -11,8 +11,16 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
-        config.enableSimpleBroker("/topic")
+        config.enableSimpleBroker("/message", "/status")
         config.setApplicationDestinationPrefixes("/app")
+
+        /*
+         config.setPathMatcher(new AntPathMatcher("."));
+         config.setAuthorizeSubscriptions(true); // включить авторизацию подписок
+         config.simpSubscribeDestMatchers("/user/queue/errors").permitAll()
+             .simpSubscribeDestMatchers("/user/**").authenticated() // только аутентифицированные пользователи
+             .simpSubscribeDestMatchers("/admin/**").hasRole("ADMIN") // только пользователи с ролью ADMIN
+         */*/*/
     }
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {

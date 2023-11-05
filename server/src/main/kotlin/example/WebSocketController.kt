@@ -1,21 +1,63 @@
 package example
 
+import org.bson.types.ObjectId
+import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
+import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.messaging.handler.annotation.SendTo
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Controller
-import java.io.Serializable
 import java.security.Principal
 
+data class MessageView(
+    val from: String,
+    val content: String,
+)
+
 @Controller
-class WebSocketController {
+class WebSocketController(
+    private val channelRepository: ChannelRepository,
+    private val userRepository: UserRepository,
+    private val simpMessagingTemplate: SimpMessagingTemplate,
+) {
+    @MessageMapping("/send/private/{username}")
+    fun handlePrivateMessage(
+        @DestinationVariable username: String,
+        @Payload message: String,
+        principal: Principal,
+    ) {
+        val user = userRepository.findByUsername(username)
+            ?: throw NotFoundException("Failed found user with username $username")
+        simpMessagingTemplate.convertAndSendToUser(
+            user.username,
+            "/message/private",
+            MessageView(principal.name, message)
+        )
+    }
 
-    data class Message(val username: String, val content: String)
+    @MessageMapping("/send/channel/{channelId}")
+    fun handleChannelMessage(
+        @DestinationVariable channelId: String,
+        @Payload message: String,
+        principal: Principal,
+    ) {
+        val channel = channelRepository.findById(ObjectId(channelId))
+            ?: throw NotFoundException("Failed found channel with id $channelId")
 
-    @MessageMapping("/hello/reply")
-    @SendTo("/topic/reply")
-    fun processMessageFromClient(content: String, request: Principal): Message {
-        val user = ((request as UsernamePasswordAuthenticationToken).principal as User)
-        return Message(user.username, content)
+        channel.isMemberOrError(principal.name)
+
+        channel.members.forEach {
+            simpMessagingTemplate.convertAndSendToUser(
+                it.username,
+                "/message/channel/${channelId}",
+                MessageView(principal.name, message)
+            )
+        }
+    }
+
+    @MessageMapping("/send/global")
+    @SendTo("/message/global")
+    fun handleGlobalMessage(@Payload message: String, principal: Principal): MessageView {
+        return MessageView(principal.name, message)
     }
 }
