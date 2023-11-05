@@ -2,35 +2,31 @@ package com.example
 
 import org.springframework.messaging.simp.stomp.StompSession
 
-class SubscriptionManager {
-    private var current: StompSession.Subscription? = null
-
-    fun setNew(subscription: StompSession.Subscription) {
-        current?.unsubscribe()
-        current = subscription
-    }
-}
-
 class Client(private val server: GameServer) {
-    private val channelSubscription = SubscriptionManager()
+    private var currentChanelSubscription: StompSession.Subscription? = null
+    private var currentChannelId: String? = null
 
-    fun subscribeMyStatus(): StompSession.Subscription {
-        return server.subscribeMyStatus { userStatus ->
-            println("Event MyStatus")
-            if (userStatus.currentChannelId == null) {
-                val channel = selectChannel(userStatus.activeChannels)
-                subscribeChannel(channel)
-            } else {
-                subscribeChannel(userStatus.currentChannelId)
+    fun handleSendMessages() {
+        while (true) {
+            val messages = readln()
+            currentChannelId?.let {
+                server.sendMessages(it, messages)
             }
         }
     }
 
+    fun joinToChannel() {
+        server.subscribeMyStatus { userStatus ->
+            println("Event MyStatus")
+            val channelId = userStatus.currentChannelId ?: selectChannel(userStatus.activeChannels)
+            currentChannelId = userStatus.currentChannelId
+            subscribeChannel(channelId)
+        }
+    }
+
     private fun subscribeChannel(channelId: String) {
-        println("You inter in channel $channelId")
-        channelSubscription.setNew(
-            server.subscribeChannel(channelId) { handleChannelMessage(it) }
-        )
+        currentChanelSubscription?.unsubscribe()
+        currentChanelSubscription = server.subscribeChannel(channelId) { handleChannelMessage(it) }
     }
 
     private fun selectChannel(activeChannels: List<ChannelView>): String {

@@ -9,7 +9,8 @@ fun runApp(): CompletableFuture<Unit> {
     val server = GameServer(session)
     val client = Client(server)
 
-    client.subscribeMyStatus()
+    client.joinToChannel()
+    client.handleSendMessages()
 
     return clientSession
 }

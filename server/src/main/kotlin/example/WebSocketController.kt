@@ -46,13 +46,10 @@ class WebSocketController(
 
         channel.isMemberOrError(principal.name)
 
-        channel.members.forEach {
-            simpMessagingTemplate.convertAndSendToUser(
-                it.username,
-                "/message/channel/${channelId}",
-                MessageView(principal.name, message)
-            )
-        }
+        simpMessagingTemplate.convertAndSend(
+            "/message/channel/${channelId}",
+            MessageView(principal.name, message)
+        )
     }
 
     @MessageMapping("/send/global")
