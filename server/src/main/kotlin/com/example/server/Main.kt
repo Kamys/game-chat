@@ -1,4 +1,4 @@
-package example
+package com.example.server
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan

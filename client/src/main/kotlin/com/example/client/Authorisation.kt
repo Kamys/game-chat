@@ -1,4 +1,4 @@
-package com.example
+package com.example.client
 
 object Authorisation {
     private var httpClient = GameHttpClient()

@@ -1,4 +1,4 @@
-package example.auth
+package com.example.server.auth
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret
 import com.nimbusds.jose.proc.SecurityContext

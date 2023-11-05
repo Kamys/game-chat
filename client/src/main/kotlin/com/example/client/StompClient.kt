@@ -1,4 +1,4 @@
-package com.example
+package com.example.client
 
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.messaging.converter.MappingJackson2MessageConverter

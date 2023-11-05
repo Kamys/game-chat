@@ -1,4 +1,4 @@
-package example
+package com.example.server
 
 import org.bson.types.ObjectId
 import org.springframework.messaging.handler.annotation.DestinationVariable

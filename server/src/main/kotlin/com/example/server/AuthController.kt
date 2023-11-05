@@ -1,7 +1,7 @@
-package example
+package com.example.server
 
-import example.auth.TokenService
-import example.auth.getCurrentUser
+import com.example.server.auth.TokenService
+import com.example.server.auth.getCurrentUser
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.GetMapping

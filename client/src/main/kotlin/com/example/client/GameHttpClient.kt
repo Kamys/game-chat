@@ -1,4 +1,4 @@
-package com.example
+package com.example.client
 
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient

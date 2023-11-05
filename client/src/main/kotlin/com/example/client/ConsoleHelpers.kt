@@ -1,4 +1,4 @@
-package com.example
+package com.example.client
 
 fun <T> selectOption(vararg options: Pair<T, String>): T {
     options.forEachIndexed { index, option ->

@@ -1,4 +1,4 @@
-package example
+package com.example.server
 
 open class BaseException(final override val message: String) : RuntimeException(message)
 open class NotFoundException(message: String) : BaseException(message)
