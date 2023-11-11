@@ -2,7 +2,7 @@ package com.example.client
 
 import org.springframework.messaging.simp.stomp.StompSession
 
-class Client(private val server: GameServer) {
+class Client(private val chatSession: ChatSession) {
     private var currentChanelSubscription: StompSession.Subscription? = null
     private var currentChannelId: String? = null
 
@@ -14,13 +14,13 @@ class Client(private val server: GameServer) {
     }
 
     fun subscribePrivateMessages() {
-        server.subscribePrivateMessages {
+        chatSession.subscribePrivateMessages {
             println("[Private] ${it.from}: ${it.content}")
         }
     }
 
     fun joinToChannel() {
-        server.subscribeMyStatus { userStatus ->
+        chatSession.subscribeMyStatus { userStatus ->
             println("Event MyStatus")
             val channelId = userStatus.currentChannelId ?: selectChannel(userStatus.activeChannels)
             currentChannelId = userStatus.currentChannelId
@@ -35,16 +35,16 @@ class Client(private val server: GameServer) {
         }
 
         tryParsePrivateMessage(message)?.let { (username, message) ->
-            server.sendPrivateMessages(username, message)
+            chatSession.sendPrivateMessages(username, message)
             return
         }
 
-        server.sendMessagesInChannel(currentChannelId, message)
+        chatSession.sendMessagesInChannel(currentChannelId, message)
     }
 
     private fun subscribeChannel(channelId: String) {
         currentChanelSubscription?.unsubscribe()
-        currentChanelSubscription = server.subscribeChannel(channelId) {
+        currentChanelSubscription = chatSession.subscribeChannel(channelId) {
             println("${it.from}: ${it.content}")
         }
     }

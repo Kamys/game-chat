@@ -6,7 +6,7 @@ fun runApp(): CompletableFuture<Unit> {
     val clientSession = CompletableFuture<Unit>()
     val token = Authorisation.getToken()
     val session = StompClient.getStompSession(token)
-    val server = GameServer(session)
+    val server = ChatSession(session)
     val client = Client(server)
 
     client.joinToChannel()

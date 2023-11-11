@@ -1,12 +1,19 @@
 package com.example.server
 
+import org.bson.types.ObjectId
 import org.springframework.context.ApplicationListener
-import org.springframework.data.repository.CrudRepository
+import org.springframework.messaging.Message
+import org.springframework.messaging.MessageChannel
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor
 import org.springframework.messaging.simp.SimpMessagingTemplate
+import org.springframework.messaging.simp.stomp.StompCommand
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor
+import org.springframework.messaging.support.ChannelInterceptor
+import org.springframework.messaging.support.MessageHeaderAccessor
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.stereotype.Component
 import org.springframework.util.AntPathMatcher
+import org.springframework.web.socket.messaging.AbstractSubProtocolEvent
 import org.springframework.web.socket.messaging.SessionSubscribeEvent
 
 data class ChannelView(
@@ -65,7 +72,8 @@ class SubscribeOnChannel(
 
     override fun handle(event: SubscribeEventData) {
         val channelId = event.variables["channelId"]
-        val channel = channelRepository.findByIdOrThrow(channelId)
+        val channel = channelRepository.findById(ObjectId(channelId))
+            ?: throw NotFoundException("Not found channel with id $channelId")
         channel.members = channel.members + event.user
         channelRepository.save(channel)
         val messages = MessageView("Server", "User '${event.user.name}' connect to channel ${channel.name}")
@@ -105,5 +113,27 @@ class StompSubscribedEvent(
         handlers.forEach {
             it.tryHandle(event)
         }
+    }
+}
+
+@Component
+class ConnectListener : ApplicationListener<AbstractSubProtocolEvent> {
+    override fun onApplicationEvent(event: AbstractSubProtocolEvent) {
+        val headers = SimpMessageHeaderAccessor.wrap(event.message)
+        println("SessionConnectEvent ${headers.messageType}: ${headers.destination}")
+    }
+}
+
+@Component
+class StompSendInterceptor : ChannelInterceptor {
+
+    override fun preSend(message: Message<*>, channel: MessageChannel): Message<*>? {
+        val accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor::class.java)
+        if (accessor != null) {
+            println("Sending STOMP message ${accessor.command}: Destination=${accessor.destination}")
+        } else {
+            println("Sending STOMP accessor is null")
+        }
+        return message
     }
 }

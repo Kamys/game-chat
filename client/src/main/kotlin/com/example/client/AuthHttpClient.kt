@@ -6,7 +6,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class GameHttpClient {
+class AuthHttpClient {
     private val client = OkHttpClient()
     private val host = "http://localhost:8080"
 

@@ -1,7 +1,7 @@
 package com.example.client
 
 object Authorisation {
-    private var httpClient = GameHttpClient()
+    private var authHttpClient = AuthHttpClient()
 
     fun getToken(): String {
         println("Please, select option:")
@@ -15,9 +15,9 @@ object Authorisation {
             val password = inputText("Password")
 
             return if (option == 1) {
-                httpClient.login(username, password)
+                authHttpClient.login(username, password)
             } else {
-                httpClient.register(username, password)
+                authHttpClient.register(username, password)
             }
         }
     }

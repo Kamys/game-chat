@@ -1,0 +1,4 @@
+spring:
+  data.mongodb.database: examples
+jwt:
+  secret: p5bNe3sgQ6tV9nGXXtiRWJZSYvuOnnf4UsR7q7bltJg=

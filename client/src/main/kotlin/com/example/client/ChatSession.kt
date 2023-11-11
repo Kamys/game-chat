@@ -21,7 +21,7 @@ data class MessageView(
     val content: String,
 )
 
-class GameServer(
+class ChatSession(
     private val session: StompSession
 ) {
     fun sendMessagesInChannel(channelId: String, message: String) {

@@ -47,6 +47,7 @@ class WebSocketController(
         @Payload message: String,
         principal: Principal,
     ) {
+        println("handleChannelMessage: $message")
         val channel = channelRepository.findById(ObjectId(channelId))
             ?: throw NotFoundException("Failed found channel with id $channelId")
 
