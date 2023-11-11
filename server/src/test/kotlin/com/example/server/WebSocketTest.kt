@@ -15,6 +15,11 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient
 import org.springframework.web.socket.messaging.WebSocketStompClient
 import java.util.concurrent.TimeUnit
 
+data class ClientText(
+    val session: StompSession,
+    val user: User
+)
+
 class WebSocketTest: BaseTest() {
     private val webSocketStompClient = createWebSocketStompClient()
 
@@ -24,8 +29,8 @@ class WebSocketTest: BaseTest() {
     @Autowired
     private lateinit var tokenService: TokenService
 
-    fun createWebSocketConnection(): Pair<StompSession, User> {
-        val user = userRepository.save(User(username = "Alex", password = randomString()))
+    fun createWebSocketConnection(username: String = randomString()): ClientText {
+        val user = userRepository.save(User(username = username, password = randomString()))
         val token = tokenService.createToken(user)
         val httpHeaders = WebSocketHttpHeaders().apply {
             add("Authorization", "Bearer $token")
@@ -34,7 +39,7 @@ class WebSocketTest: BaseTest() {
             .connectAsync("ws://localhost:$serverPort/ws", httpHeaders, TestConnectionHandler())
             .get(1, TimeUnit.SECONDS)
 
-        return Pair(stompSession, user)
+        return ClientText(stompSession, user)
     }
 
     companion object {

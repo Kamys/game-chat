@@ -12,7 +12,11 @@ import java.security.Principal
 data class MessageView(
     val from: String,
     val content: String,
-)
+) {
+    override fun toString(): String {
+        return "$from: $content"
+    }
+}
 
 @Controller
 class WebSocketController(

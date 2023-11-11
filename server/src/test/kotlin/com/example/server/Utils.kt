@@ -1,10 +1,10 @@
 package com.example.server
 
-import org.springframework.messaging.simp.stomp.StompCommand
-import org.springframework.messaging.simp.stomp.StompHeaders
-import org.springframework.messaging.simp.stomp.StompSession
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter
+import org.springframework.messaging.simp.stomp.*
 import org.springframework.web.socket.WebSocketHttpHeaders
+import java.lang.reflect.Type
+import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.BlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
@@ -35,4 +35,16 @@ class TestConnectionHandler : StompSessionHandlerAdapter() {
         println("handleException $exception")
         super.handleException(session, command, headers, payload, exception)
     }
+}
+
+inline fun <reified T> StompSession.subscribeOnMessage(destination: String): BlockingQueue<T> {
+    val blockingQueue: BlockingQueue<T> = ArrayBlockingQueue(10)
+    this.subscribe(destination, object : StompFrameHandler {
+        override fun getPayloadType(headers: StompHeaders): Type = T::class.java
+
+        override fun handleFrame(headers: StompHeaders, payload: Any?) {
+            blockingQueue.add(payload as T)
+        }
+    })
+    return blockingQueue
 }
