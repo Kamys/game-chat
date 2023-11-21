@@ -9,7 +9,7 @@ fun runApp(): CompletableFuture<Unit> {
     val server = ChatSession(session)
     val client = Client(server)
 
-    client.joinToChannel()
+    client.joinToChannel().join()
     client.subscribePrivateMessages()
     client.handleUserInput()
 

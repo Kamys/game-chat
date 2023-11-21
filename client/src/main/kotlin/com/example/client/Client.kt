@@ -1,6 +1,7 @@
 package com.example.client
 
 import org.springframework.messaging.simp.stomp.StompSession
+import java.util.concurrent.CompletableFuture
 
 class Client(private val chatSession: ChatSession) {
     private var currentChanelSubscription: StompSession.Subscription? = null
@@ -19,13 +20,16 @@ class Client(private val chatSession: ChatSession) {
         }
     }
 
-    fun joinToChannel() {
+    fun joinToChannel(): CompletableFuture<Unit> {
+        val connectToChannel = CompletableFuture<Unit>()
         chatSession.subscribeMyStatus { userStatus ->
             println("Event MyStatus")
             val channelId = userStatus.currentChannelId ?: selectChannel(userStatus.activeChannels)
-            currentChannelId = userStatus.currentChannelId
             subscribeChannel(channelId)
+            currentChannelId = channelId
+            connectToChannel.complete(Unit)
         }
+        return connectToChannel
     }
 
     private fun handleInputMessage(currentChannelId: String?, message: String) {
